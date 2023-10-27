@@ -1,0 +1,209 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+    ports:
+    - protocol: TCP
+      port: 3306
+
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+  namespace: prod
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+      namespaceSelector: 
+        matchlabels:
+          name: stagging
+    - ipBlock:
+        cidir: 192.168.5.10/32     
+    ports:
+    - protocol: TCP
+      port: 3306
+      
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+  namespace: prod
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+    ports:
+    - protocol: TCP
+      port: 3306
+  egress:
+  - to:
+    - ipBlock:
+        cidir: 192.168.5.10/32
+    ports:
+    - protocol: TCP
+      port: 80
+  
+  
+  
+  
+  
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+  namespace: prod
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: db
+    ports:
+    - protocol: TCP
+      port: 3306
+  
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  labels:
+    app: web-pod
+    type: front-end
+spec:
+ template:
+   metadata:
+     labels:
+       app: web-pod
+       type: front-end
+   spec:
+     containers:
+       - name: frontend-container
+         image: nginx:latest
+ replicas: 1 
+ selector:
+   matchLabels:
+     type: front-end
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api-pod
+    type: backend-end
+spec:
+ template:
+   metadata:
+     labels:
+       app: api-pod
+       type: backend-end
+   spec:
+     containers:
+       - name: backend-container
+         image: nginx:latest
+ replicas: 1  
+ selector:
+   matchLabels:
+     type: backend-end
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-mysql
+  labels:
+    app: db
+    type: mysql
+spec:
+ template:
+   metadata:
+     labels:
+       app: db
+       type: mysql
+   spec:
+     containers:
+       - name: mysql-container
+         image: mysql:latest
+ replicas: 1  
+ selector:
+   matchLabels:
+     type: mysql
+
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-policy
+  namespace: prod
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+    ports:
+    - protocol: TCP
+      port: 8088
+  
+      
+      

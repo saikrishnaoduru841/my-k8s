@@ -1,0 +1,78 @@
+kubectl expose service my-release-grafana --type=NodePort --target-port=3000 --name=my-grafana -n test
+kubectl expose service my-release-influxdb --type=NodePort --target-port=8086 --name=my-influxdb -n test
+kubectl expose service my-release-grafana --type=LoadBalancer --target-port=3000 --name=my-grafana -n dev
+kubectl expose service my-release-influxdb --type=LoadBalancer --target-port=8086 --name=my-influxdb -n dev
+
+kubectl expose service open5gs-nssf-sbi --type=LoadBalancer --target-port=7777 --name=nssf-svc 
+
+---
+kubectl run nginx --image=nginx
+
+kubectl run nginx --image=nginx -l=app-nginx
+
+kubectl run nginx --image=nginx --serviceaccount="kplabs"
+
+kubectl expose pod nginx --port=80 --target-port=80 --name=nginx-service [--type=LoadBalancer]
+
+kubectl run nginx --image=nginx --dry-run=client -o yaml
+
+kubectl create deployment --image=nginx nginx
+
+kubectl create deployment --image=nginx nginx --dry-run -o yaml
+
+kubectl create deployment nginx --image=nginx --replicas=4
+
+kubectl scale deployment nginx --replicas=4
+
+kubectl create deployment nginx --image=nginx--dry-run=client -o yaml > nginx-deployment.yaml
+
+kubectl expose pod nginx --port=80 --name nginx-service --type=NodePort --dry-run=client -o yaml
+
+kubectl run nginx --image=redis:alpine --labels='tier=db'
+
+kubectl create service --help
+
+kubectl create service clusterip --help
+
+kubectl create service clusterip redis --tcp=6379:6379
+
+kubectl run httpd --image=httpd:alpine --port=80 --expose=true
+
+kubectl get nodes --show-labels
+
+kubectl label nodes worker-2 env=prod
+
+kubectl config get-contexts
+
+kubectl config current-context
+
+kubectl config use-context gke-autopilot-3
+
+kubectl label namespace default istio-injection=enabled
+
+# Istio Setup in Kubernetes | Step by Step Guide to install Istio Service Mesh
+
+kubectl port-forward svc/kiali -n istio-system 20001
+kubectl port-forward svc/<service-name> -n <namespace> <service-port>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

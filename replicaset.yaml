@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: myapp-rc
+  labels:
+    app: myapp
+    type: front-end
+spec:
+ template:
+   metadata:
+     name: myapp-pod
+     labels:
+       app: myapp
+       type: front-end
+   spec:
+     containers:
+       - name: nginx-container
+         image: nginx
+ replicas: 3  
+ 
+ 
+#kubectl create -f replicationcontroller.yaml
+#kubectl apply -f replicationcontroller.yaml
+#kubectl get rc or replicationcontroller
+#kubectl get pods
+#kubectl delete rc myapp-rc
+
+
+---
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-rs
+  labels:
+    app: myapp
+    type: front-end
+spec:
+ template:
+   metadata:
+     name: myapp-pod
+     labels:
+       app: myapp
+       type: front-end
+   spec:
+     containers:
+       - name: nginx-container
+         image: nginx
+ replicas: 3  
+ selector:
+   matchLabels:
+     type: front-end
+ 
+
+#kubectl create -f replicaset.yaml
+#kubectl apply -f replicaset.yaml
+#kubectl get rs or replicaset
+#kubectl get pods
+#kubectl scale --replicaset=6 replicaset myapp-rs
+#kubectl delete rs myapp-rs
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+  

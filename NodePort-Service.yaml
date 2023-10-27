@@ -1,0 +1,64 @@
+#kubectl expose service my-release-grafana --type=NodePort --target-port=3000 --name=my-grafana -n test
+#kubectl expose service my-release-influxdb --type=NodePort --target-port=8086 --name=my-influxdb -n test
+#kubectl expose service my-release-grafana --type=LoadBalancer --target-port=3000 --name=my-grafana -n dev
+#kubectl expose service my-release-influxdb --type=LoadBalancer --target-port=8086 --name=my-influxdb -n dev
+#kubectl get cm kube-proxy -n kube-system -o yaml | grep -i mode
+#kubectl port-forward -n argocd svc argocd-server 8080:443
+#kubectl port-forward -n argocd svc/argocd-server 8080:443
+
+#kubectl expose service myapp-service --type=LoadBalancer --target-port=3000 --name=my-app
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  type: NodePort
+  ports:
+   - targetPort: 80
+     port: 80
+     nodePort: 30008
+  selector:
+     app: myapp
+     type: frontend
+     
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30080
+    port: 8080
+    targetPort: 8080
+  selector:
+    name: simple-webapp
+  type: NodePort
+  
+---  
+  
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - protocol: TCP
+      port: 8089
+      targetPort: 8089
+  clusterIP: 10.96.0.1
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.0.2.127  
+  
+  
+  
+  

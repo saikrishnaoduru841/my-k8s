@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: math-pod
+spec:
+  containers:
+    - name: math-pod
+      image: ubuntu
+      command: ['expr', '3', '+', '2']
+  restartPolicy: Never
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: math-add-job
+spec:
+  completions: 3
+  parallelism: 3
+  template:
+    spec:
+      containers:
+       - name: math-pod
+         image: ubuntu
+         command: ['expr', '3', '+', '2']
+      restartPolicy: Never
+
+---
+#kubectl get jobs
+
+#kubectl logs job-name
+
+#kubectl delete job job-name
+
+---
+
+
+

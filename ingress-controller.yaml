@@ -1,0 +1,267 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginx-ingress
+  template:
+    metadata:
+      name: nginx-ingress
+    spec:
+      containers:
+        - name: nginx-ingress-controller
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.21.0
+      args:
+        - /nginx-ingress-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-configuration
+      
+      env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      ports:
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+        
+
+---
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-configuration
+
+---
+
+apiVersion: v1
+kind: service
+metadata:
+  name: nginx-ingress
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    name: nginx-ingress
+      
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceacount
+
+#Roles
+#ClusterRoles
+#RoleBinding
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-wear
+spec:
+  backend:
+    serviceName: wear-service
+    servicePort: 80
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-wear-watch
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /wear
+        backend:
+          serviceName: wear-service
+            servicePort: 80
+      - path: /watch
+        backend:
+          serviceName: watch-service
+            servicePort: 80
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-wear-watch
+spec:
+  rules:
+  - host: wear.my-online-store.com
+    http:
+      paths:
+      - path: /wear
+        backend:
+          serviceName: wear-service
+            servicePort: 80
+  - host: watch.my-online-store.com
+    http:
+      paths:
+      - path: /watch
+        backend:
+          serviceName: watch-service
+            servicePort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wear-watch
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /wear
+        pathType: Prefix
+        backend: 
+          service: 
+            name: wear-service
+            port:
+              number: 80
+      - path: /watch
+        pathType: Prefix
+        backend: 
+          service: 
+            name: watch-service
+            port:
+              number: 80    
+      
+---
+#/wear    - image: kodekloud/ecommerce:apparels
+#/video   - image: kodekloud/ecommerce:video
+#/food    - image: kodekloud/ecommerce:food
+#/pay     - image: kodekloud/ecommerce:pay
+
+---
+#kubectl create ingress ingress-pay -n critical-space --rule="/pay=pay-service:8282"
+
+
+#annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+      
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test-ingress
+  namespace: critical-space
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /pay
+        backend:
+          serviceName: pay-service
+          servicePort: 8282
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: rewrite
+  namespace: default
+spec:
+  rules:
+  - host: rewrite.bar.com
+    http:
+      paths:
+      - backend:
+          serviceName: http-svc
+          servicePort: 80
+        path: /something(/|$)(.*)
+        
+        
+        
+============
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: www.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx
+          servicePort: 80
+  - host: api.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: api
+          servicePort: 8080
+  - host: www.staging.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: staging
+          servicePort: 80
+  tls:
+  - hosts:
+    - www.example.com
+    secretName: tls-secret
+  - hosts:
+    - api.example.com
+    secretName: tls-secret
+      
+      
+      
+---
+# kevin demo
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: my-static-address
+
+      
+      
+      
+      
+ 
+
+
+
+
+
+
+
+

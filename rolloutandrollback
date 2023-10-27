@@ -1,0 +1,45 @@
+kubectl rollout status deployment/my-deployment
+
+kubectl rollout history deployment/my-deployment
+
+kubectl rollout undo deployment my-deployment
+
+kubectl rollout history deployment nginx --revision=1
+
+kubectl create -f deploy.yaml --record
+
+kubectl rollout resume deployment/nginx-deployment
+
+kubectl rollout pause deployment/nginx-deployment
+
+kubectl autoscale deployment/nginx-deployment --min=10 --max=15 --cpu-percent=80
+
+---
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+ name: my-deployment
+ labels:
+   app: App1
+   function: Front-end
+spec:
+ replicas: 2
+ selector:
+   matchLabels:
+     app: App1
+ template:
+   metadata:
+     name: my-deployment
+     labels:
+       app: App1
+       function: Front-end
+   spec:
+     containers:
+      - name: my-deployment
+        image: nginx:1.7.1
+        ports:
+        - containersPort: 8080
+
+
+#kubectl set image deployment my-deployment ngnix-container=nginx:1.9.1

@@ -1,0 +1,18 @@
+#ENV Value Types
+
+env: 
+  - name: APP_COLOR
+    value: pink
+---    
+env: 
+  - name: APP_COLOR
+    valueFrom:
+      configMapKeyRef:
+---       
+env: 
+  - name: APP_COLOR 
+    valueFrom:
+      secretKeyRef:
+
+---
+

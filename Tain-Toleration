@@ -1,0 +1,39 @@
+#kubectl taint nodes node-name key=value:taint-effect
+
+
+Toleration pod
+
+#kubectl taint nodes node1 app=blue:NoSchedule
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+spec:
+ containers:
+   - name: myapp
+     image: nginx
+ tolerations:
+ - key: "app"
+   operator: "Equal"
+   value: "blue"
+   effect: "NoSchedule"
+
+#kubectl describe node kubemaster | grep Taint
+
+#kubectl taint node controlplane node-role.kubernetes.io/control-plane:NoSchedule-
+
+#kubectl taint nodes mynode dedicated-
+
+#node-role.kubernetes.io/control-plane:NoSchedule
+
+With a taint on a node we can repel Pods as we saw on the post regarding taints and tolerations. So, if we want to taint a node we use kubectl taint as follows:
+
+$ kubectl taint nodes minikube application=example:NoSchedule
+node/minikube tainted
+How do we untaint a node?
+
+We can use kubectl taint but adding an hyphen at the end to remove the taint (untaint the node):
+
+$ kubectl taint nodes minikube application=example:NoSchedule-
+node/minikubee untainted
